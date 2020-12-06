@@ -39,7 +39,20 @@ public class TerminatePieceAction extends Action {
      */
     @Override
     public void perform() throws ActionException {
-        //TODO
+        if(args.length < 1)
+            throw new ActionException("empty args");
+        var place = ConsolePlayer.parsePlace(args[0]);
+        if(place == null)
+            throw new ActionException("invalid place: can not parse place");
+        if(place.y() < 0 || place.y() >= game.getConfiguration().getSize() ||
+                place.x() < 0 || place.x() >= game.getConfiguration().getSize())
+            throw new ActionException("invalid place: not legal position in board");
+        var piece = game.getPiece(place);
+        if(piece == null)
+            throw new ActionException("can not terminate an empty piece");
+        if(!(piece.getPlayer() instanceof ComputerPlayer))
+            throw new ActionException("the piece is not belonging to ComputerPlayer");
+        piece.terminate();
     }
 
     @Override

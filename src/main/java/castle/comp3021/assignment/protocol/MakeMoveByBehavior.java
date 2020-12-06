@@ -26,8 +26,32 @@ public class MakeMoveByBehavior {
      * @return a selected move adopting strategy specified by {@link this#behavior}
      */
     public Move getNextMove(){
-        // TODO
-        return this.availableMoves[0];
+        Place center = game.getCentralPlace();
+        Move cloest = null;
+        double minDistance = 2 * game.getConfiguration().getSize();
+        for( var move : availableMoves) {
+            if(cloest == null) {
+                cloest = move;
+                minDistance = getDistance(cloest.getDestination(), center);
+            }else {
+                double distance = getDistance(move.getDestination(), center);
+                if(distance < minDistance) {
+                    cloest = move;
+                    minDistance = distance;
+                } else if(distance == minDistance) {
+                    double dist1 = getDistance(move.getSource(), center);
+                    double dist2 = getDistance(cloest.getSource(), center);
+                    if(dist1 > dist2) {
+                        cloest = move;
+                    }
+                }
+            }
+        }
+        return cloest;
+    }
+
+    public static double getDistance(Place a, Place b){
+        return Math.sqrt((a.x() - b.x()) * (a.x() - b.x()) + (a.y() - b.y()) * (a.y() - b.y()));
     }
 }
 

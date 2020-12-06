@@ -18,8 +18,25 @@ public class CriticalRegionRule implements Rule {
      */
     @Override
     public boolean validate(Game game, Move move) {
-        //TODO
-        return false;
+        boolean isInBefore = isInCriticalRegion(game, move.getSource());
+        boolean isInAfter = isInCriticalRegion(game, move.getDestination());
+        if(isInAfter && isInBefore || !isInAfter)
+            return true;
+        return game.getConfiguration().getCriticalRegionCapacity() > getCurrentNumberInCriticalRegion(game, move);
+    }
+
+    private int getCurrentNumberInCriticalRegion(Game game, Move move) {
+        int size = game.getConfiguration().getCriticalRegionSize();
+        int start = (game.getConfiguration().getSize() - size) / 2;
+        int stop = (game.getConfiguration().getSize() + size) / 2;
+        int count = 0;
+        for(int i = start; i != stop; ++i) {
+            for(int j = 0; j < game.getConfiguration().getSize(); ++j) {
+                if(game.getPiece(j, i) != null && !move.getDestination().equals(new Place(j,i)))
+                    ++count;
+            }
+        }
+        return count;
     }
 
     /**
@@ -33,8 +50,9 @@ public class CriticalRegionRule implements Rule {
      * @return whether the given move is in critical region
      */
     private boolean isInCriticalRegion(Game game, Place place) {
-        //TODO
-        return false;
+        int size = game.getConfiguration().getCriticalRegionSize();
+        return place.y() >= (game.getConfiguration().getSize() - size) / 2 &&
+                place.y() < (game.getConfiguration().getSize() + size) / 2;
     }
 
     @Override

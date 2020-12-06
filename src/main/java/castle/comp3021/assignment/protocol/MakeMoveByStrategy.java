@@ -2,10 +2,15 @@ package castle.comp3021.assignment.protocol;
 
 import castle.comp3021.assignment.piece.Knight;
 
+import java.util.Random;
+
 public class MakeMoveByStrategy {
     private final Strategy strategy;
     private final Game game;
     private final Move[] availableMoves;
+
+    private static final double CaptureWeight = 1;
+    private static final double DistanceWeight = 1;
 
     public MakeMoveByStrategy(Game game, Move[] availableMoves, Strategy strategy){
         this.game = game;
@@ -22,7 +27,25 @@ public class MakeMoveByStrategy {
      * @return a next move
      */
     public Move getNextMove(){
-        // TODO
-        return this.availableMoves[0];
+        if(availableMoves == null || availableMoves.length == 0)
+            return null;
+        if(strategy == Strategy.RANDOM) {
+            Random random = new Random();
+            return availableMoves[random.nextInt(availableMoves.length)];
+        } else {
+            Move best = availableMoves[0];
+            for(int i = 1; i < availableMoves.length; ++i) {
+                if(h(availableMoves[i]) > h(best))
+                    best = availableMoves[i];
+            }
+            return best;
+        }
+    }
+
+    private double h(Move availableMove) {
+        double distance = MakeMoveByBehavior.getDistance(availableMove.getDestination(), game.getCentralPlace()) * DistanceWeight;
+        double canCapture = (game.getPiece(availableMove.getDestination()) != null ? CaptureWeight : 0);
+        return distance + canCapture;
     }
 }
+

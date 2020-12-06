@@ -199,8 +199,30 @@ public class JesonMor extends Game {
      * @return an array of available moves
      */
     public @NotNull Move[] getAvailableMoves(Player player) {
-        //TODO
-        return null;
+        var ret = new ArrayList<Move>();
+        if(player instanceof HumanPlayer) {
+            for(int i = 0;i<board.length;++i) {
+                for(int j = 0;j<board[i].length;++j) {
+                    if(board[i][j] != null && board[i][j].getPlayer() == player) {
+                        var moves = board[i][j].getAvailableMoves(this,new Place(i,j));
+                        for(int k = 0;k<moves.length;++k)
+                            ret.add(moves[k]);
+                    }
+                }
+            }
+        } else {
+            System.out.println("Computer is figuring out next move...");
+            for(int i = 0;i<board.length;++i) {
+                for(int j = 0;j<board[i].length;++j) {
+                    if(board[i][j] != null && board[i][j].getPlayer() == player) {
+                        var move = board[i][j].getCandidateMove(this,new Place(i,j));
+                        if(move != null)
+                            ret.add(move);
+                    }
+                }
+            }
+        }
+        return ret.toArray(Move[]::new);
     }
 
     /**
@@ -243,7 +265,15 @@ public class JesonMor extends Game {
      */
     @Override
     public void showHistoryMove() {
-        //TODO
+        if(moveRecords.isEmpty()) {
+            System.out.println("No move history.");
+            return;
+        }
+
+        System.out.println("Game History:");
+        for(var record : moveRecords) {
+            System.out.println(record);
+        }
     }
 
     @Override

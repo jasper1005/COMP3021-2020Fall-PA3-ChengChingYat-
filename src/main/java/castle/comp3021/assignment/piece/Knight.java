@@ -5,6 +5,7 @@ import castle.comp3021.assignment.protocol.*;
 import java.util.ArrayList;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -90,8 +91,21 @@ public class Knight extends Piece {
      */
     @Override
     public synchronized Move getCandidateMove(Game game, Place source) {
-        //TODO
-        return null;
+        if(stopped.get() || !running.get())
+            return null;
+        candidateMoveQueue.clear();
+        calculateMoveParametersQueue.add(new Object[]{game,source});
+        synchronized (this) {
+            notify();
+        }
+        try {
+            var move = candidateMoveQueue.poll(1, TimeUnit.SECONDS);
+            if(move.equals(new InvalidMove()))
+                return null;
+            return move;
+        } catch (InterruptedException e) {
+            return null;
+        }
     }
 
     private boolean validateMove(Game game, Move move) {
@@ -137,7 +151,8 @@ public class Knight extends Piece {
      */
     @Override
     public void pause() {
-        //TODO
+        if(!stopped.get())
+            running.set(false);
     }
 
     /**
@@ -148,7 +163,12 @@ public class Knight extends Piece {
      */
     @Override
     public void resume() {
-        //TODO
+        if(!stopped.get()) {
+            running.set(true);
+            synchronized (this) {
+                notify();
+            }
+        }
     }
 
     /**
@@ -159,7 +179,11 @@ public class Knight extends Piece {
      */
     @Override
     public void terminate() {
-        //TODO
+        stopped.set(true);
+        running.set(false);
+        synchronized (this) {
+            notify();
+        }
     }
 
     /**
@@ -179,6 +203,36 @@ public class Knight extends Piece {
      */
     @Override
     public void run() {
-        //TODO
+        synchronized (this) {
+            while (!stopped.get()) {
+                if (!running.get()) {
+                    try {
+                        wait();
+                    } catch (InterruptedException e) {
+                        continue;
+                    }
+                    continue;
+                }
+
+                Object[] objects = calculateMoveParametersQueue.poll();
+                if (objects == null) {
+                    try {
+                        wait();
+                    } catch (InterruptedException e) {
+                        continue;
+                    }
+                    continue;
+                }
+
+                Game game = (Game) objects[0];
+                Place source = (Place) objects[1];
+
+                Move move = new MakeMoveByBehavior(game, getAvailableMoves(game, source), behavior).getNextMove();
+                if(move == null)
+                    move = new InvalidMove();
+                if (running.get() && !stopped.get())
+                    candidateMoveQueue.add(move);
+            }
+        }
     }
 }
