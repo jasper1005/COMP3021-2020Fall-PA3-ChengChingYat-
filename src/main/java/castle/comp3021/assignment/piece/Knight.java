@@ -90,7 +90,7 @@ public class Knight extends Piece {
      * @return one candidate move
      */
     @Override
-    public synchronized Move getCandidateMove(Game game, Place source) {
+    public Move getCandidateMove(Game game, Place source) {
         if(stopped.get() || !running.get())
             return null;
         candidateMoveQueue.clear();

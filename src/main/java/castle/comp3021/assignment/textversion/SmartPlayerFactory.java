@@ -22,7 +22,6 @@ public class SmartPlayerFactory {
      * @return the smart {@link ComputerPlayer}
      */
     public static Player generateSmartPlayer(int boardSize) {
-        // TODO optional, if you want to change the smart player instantiation
         return new ComputerPlayer("smart", Color.BLACK, Strategy.SMART);
     }
 
@@ -40,7 +39,6 @@ public class SmartPlayerFactory {
      * @return an array with pieces specifies each piece's behavior (including behaviors in {@link Behavior})
      */
     public static Piece[] generateSmartPieces(int boardSize, Player player) {
-        // TODO optional, if you want to change smart player's pieces instantiation
         var ls = new ArrayList<Piece>();
         for (int i = 0; i < boardSize; i++) {
             if (i % 2 == 0) {

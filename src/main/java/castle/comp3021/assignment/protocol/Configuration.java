@@ -200,7 +200,6 @@ public class Configuration implements Cloneable {
         // put the piece on the initial board
         this.initialBoard[place.x()][place.y()] = piece;
 
-        // start piece thread and update {@link Configuration#pieceThreadMap} here
         Thread thread = new Thread(piece);
         thread.start();
         pieceThreadMap.put(piece,thread);

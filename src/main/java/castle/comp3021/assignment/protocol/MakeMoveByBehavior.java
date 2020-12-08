@@ -2,6 +2,10 @@ package castle.comp3021.assignment.protocol;
 
 import castle.comp3021.assignment.piece.Knight;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 public class MakeMoveByBehavior {
     private final Behavior behavior;
     private final Game game;
@@ -26,19 +30,52 @@ public class MakeMoveByBehavior {
      * @return a selected move adopting strategy specified by {@link this#behavior}
      */
     public Move getNextMove(){
+        if(availableMoves.length == 0)
+            return null;
+        if(behavior == Behavior.RANDOM) {
+            Random r = new Random();
+            return availableMoves[r.nextInt(availableMoves.length)];
+        } else if(behavior == Behavior.GREEDY) {
+            return mostCloest(availableMoves);
+        } else if(behavior == Behavior.CAPTURING) {
+            return mostCapturing(availableMoves);
+        } else if(behavior == Behavior.BLOCKING) {
+            return block(availableMoves);
+        }
+        return null;
+    }
+
+    private Move block(Move[] availableMoves) {
+        return mostCloest(availableMoves);
+    }
+
+    private Move mostCapturing(Move[] availableMoves) {
+        List<Move> candinate = new ArrayList<Move>();
+        for( var move : availableMoves) {
+            if(game.getPiece(move.getDestination()) != null) {
+                candinate.add(move);
+            }
+        }
+        Move[] ret = candinate.toArray(Move[]::new);
+        if(candinate == null || ret.length == 0)
+            ret = availableMoves;
+        return mostCloest(ret);
+    }
+
+    private Move mostCloest(Move[] availableMoves) {
         Place center = game.getCentralPlace();
         Move cloest = null;
-        double minDistance = 2 * game.getConfiguration().getSize();
+        double minDitance = 2 * game.getConfiguration().getSize();
         for( var move : availableMoves) {
             if(cloest == null) {
                 cloest = move;
-                minDistance = getDistance(cloest.getDestination(), center);
+                minDitance = getDistance(cloest.getDestination(), center);
             }else {
                 double distance = getDistance(move.getDestination(), center);
-                if(distance < minDistance) {
+                if(distance < minDitance) {
                     cloest = move;
-                    minDistance = distance;
-                } else if(distance == minDistance) {
+                    minDitance = distance;
+                } else if(distance == minDitance) {
                     double dist1 = getDistance(move.getSource(), center);
                     double dist2 = getDistance(cloest.getSource(), center);
                     if(dist1 > dist2) {

@@ -48,4 +48,3 @@ public class MakeMoveByStrategy {
         return distance + canCapture;
     }
 }
-

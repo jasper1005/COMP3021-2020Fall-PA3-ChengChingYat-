@@ -1,9 +1,6 @@
 package castle.comp3021.assignment.piece;
 
-import castle.comp3021.assignment.protocol.Configuration;
-import castle.comp3021.assignment.protocol.Game;
-import castle.comp3021.assignment.protocol.Move;
-import castle.comp3021.assignment.protocol.Place;
+import castle.comp3021.assignment.protocol.*;
 
 public class CriticalRegionRule implements Rule {
 
