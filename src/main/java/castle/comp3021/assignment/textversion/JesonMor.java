@@ -29,6 +29,9 @@ public class JesonMor extends Game {
         }
     }
 
+    private LimitedStack<Stack<Object>> limitStack;
+    private Stack<Object> recentRecord;
+
     private Player winner;
 
     public JesonMor() {
@@ -179,6 +182,19 @@ public class JesonMor extends Game {
         assert destPiece == null || !destPiece.getPlayer().equals(sourcePiece.getPlayer())
                 : "cannot capture a piece belonging to the same player";
 
+        var destinationPiece = this.board[move.getDestination().x()][move.getDestination().y()];
+        if(getCurrentPlayer() instanceof HumanPlayer) {
+            recentRecord = new Stack<Object>();
+        }
+        recentRecord.push(move);
+        recentRecord.push(destinationPiece);
+        recentRecord.push(currentPlayer);
+        if(!(getCurrentPlayer() instanceof HumanPlayer) && recentRecord != null){
+            if(limitStack == null)
+                limitStack = new LimitedStack<Stack<Object>>(UNDO_LIMIT);
+            limitStack.push(recentRecord);
+        }
+
         // move the piece
         this.board[move.getDestination().x()][move.getDestination().y()] = sourcePiece;
         this.board[move.getSource().x()][move.getSource().y()] = null;
@@ -193,7 +209,9 @@ public class JesonMor extends Game {
      *          the returned available moves should be an array of ALL available moves
      * - for {@link ComputerPlayer}:
      *          before a candidate move is proposed, print "Computer is figuring out next move..."
-     *          return an array containing only ONE move selected from all available moves
+     *          return an array containing candidate moves proposed by each piece thread of computer player.
+     *          Paused/terminated pieces will not propose candidate moves.
+     *          The number of moves in the array should be the same as the number of non-paused/non-terminated pieces.
      *
      * @param player the player whose available moves to get
      * @return an array of available moves
@@ -247,7 +265,29 @@ public class JesonMor extends Game {
      */
     @Override
     public void undo() throws UndoException {
-        //TODO
+        if(!(currentPlayer instanceof HumanPlayer))
+            throw new UndoException("not HumanPlayer's turn");
+        if(!(this.configuration.getPlayers()[(this.numMoves + 1) % this.configuration.getPlayers().length] instanceof ComputerPlayer))
+            throw new UndoException("Undo is only supported when there is one human player and one computer player");
+        if(limitStack == null || limitStack.empty())
+            throw new UndoException("No further undo is allowed");
+
+        Stack<Object> moves = limitStack.pop();
+        for(int i = 1; i >= 0; --i) {
+            var player = (Player)(moves.pop());
+            var destinationPiece = (Piece)(moves.pop());
+            var move = (Move)(moves.pop());
+
+            this.board[move.getSource().x()][move.getSource().y()] = this.board[move.getDestination().x()][move.getDestination().y()];
+            this.board[move.getDestination().x()][move.getDestination().y()] = destinationPiece;
+
+            var newScore = player.getScore();
+            newScore -= Math.abs(move.getSource().x() - move.getDestination().x());
+            newScore -= Math.abs(move.getSource().y() - move.getDestination().y());
+            player.setScore(newScore);
+        }
+        refreshOutput();
+        System.out.println("Game state reverted");
     }
 
     /**
