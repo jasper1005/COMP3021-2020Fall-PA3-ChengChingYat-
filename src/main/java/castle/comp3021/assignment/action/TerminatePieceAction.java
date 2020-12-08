@@ -4,8 +4,6 @@ import castle.comp3021.assignment.player.ComputerPlayer;
 import castle.comp3021.assignment.player.ConsolePlayer;
 import castle.comp3021.assignment.protocol.Action;
 import castle.comp3021.assignment.protocol.Game;
-import castle.comp3021.assignment.protocol.Piece;
-import castle.comp3021.assignment.protocol.Place;
 import castle.comp3021.assignment.protocol.exception.ActionException;
 
 /**
@@ -31,11 +29,11 @@ public class TerminatePieceAction extends Action {
      * Throw {@link ActionException} when exception happens.
      * <p>
      * Related meethods:
-     * - {@link Piece#terminate()}
+     * - {Piece#terminate()}
      * - {@link Thread#interrupt()}
      * <p>
      * - The piece thread can be get by
-     * {@link castle.comp3021.assignment.protocol.Configuration#getPieceThread(Piece)}
+     * {castle.comp3021.assignment.protocol.Configuration#getPieceThread(Piece)}
      */
     @Override
     public void perform() throws ActionException {

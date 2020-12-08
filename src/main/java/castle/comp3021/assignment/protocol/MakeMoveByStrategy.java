@@ -1,7 +1,5 @@
 package castle.comp3021.assignment.protocol;
 
-import castle.comp3021.assignment.piece.Knight;
-
 import java.util.Random;
 
 public class MakeMoveByStrategy {
@@ -9,8 +7,8 @@ public class MakeMoveByStrategy {
     private final Game game;
     private final Move[] availableMoves;
 
-    private static final double CaptureWeight = 1;
-    private static final double DistanceWeight = 1;
+    private static final double CAPTUREWEIGHT = 1;
+    private static final double DISTANCEWEIGHT = 1;
 
     public MakeMoveByStrategy(Game game, Move[] availableMoves, Strategy strategy){
         this.game = game;
@@ -43,8 +41,9 @@ public class MakeMoveByStrategy {
     }
 
     private double h(Move availableMove) {
-        double distance = MakeMoveByBehavior.getDistance(availableMove.getDestination(), game.getCentralPlace()) * DistanceWeight;
-        double canCapture = (game.getPiece(availableMove.getDestination()) != null ? CaptureWeight : 0);
+        double distance = MakeMoveByBehavior.getDistance(availableMove.getDestination(),
+                game.getCentralPlace()) * DISTANCEWEIGHT;
+        double canCapture = (game.getPiece(availableMove.getDestination()) != null ? CAPTUREWEIGHT : 0);
         return distance + canCapture;
     }
 }

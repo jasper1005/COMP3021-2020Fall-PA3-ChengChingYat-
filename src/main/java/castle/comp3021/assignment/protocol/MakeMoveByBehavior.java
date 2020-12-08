@@ -1,7 +1,5 @@
 package castle.comp3021.assignment.protocol;
 
-import castle.comp3021.assignment.piece.Knight;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -24,7 +22,7 @@ public class MakeMoveByBehavior {
      * - {@link Behavior#GREEDY}: prefer the moves towards central place, the closer, the better
      * - {@link Behavior#CAPTURING}: prefer the moves that captures the enemies, killing the more, the better.
      *                               when there are many pieces that can captures, randomly select one of them
-     * - {@link Behavior#BLOCKING}: prefer the moves that block enemy's {@link Knight}.
+     * - {@link Behavior#BLOCKING}: prefer the moves that block enemy's.
      *                              See how to block a knight here: https://en.wikipedia.org/wiki/Xiangqi (see `Horse`)
      *
      * @return a selected move adopting strategy specified by {@link this#behavior}

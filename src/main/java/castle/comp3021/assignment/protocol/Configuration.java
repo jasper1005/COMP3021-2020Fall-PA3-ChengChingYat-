@@ -3,7 +3,6 @@ package castle.comp3021.assignment.protocol;
 import castle.comp3021.assignment.piece.Archer;
 import castle.comp3021.assignment.piece.Knight;
 import castle.comp3021.assignment.player.ComputerPlayer;
-import castle.comp3021.assignment.player.ConsolePlayer;
 import castle.comp3021.assignment.protocol.exception.InvalidConfigurationError;
 
 import java.util.HashMap;
@@ -106,7 +105,8 @@ public class Configuration implements Cloneable {
         }
 
         if(criticalRegionCapacity < 1 || criticalRegionCapacity > size) {
-            throw new InvalidConfigurationError("capacity of critical region size for each player of gameboard is at least 1 and at most size of game board");
+            throw new InvalidConfigurationError
+                    ("capacity of critical region size for each player of gameboard is at least 1 and at most size of game board");
         }
 
         //validate number of players

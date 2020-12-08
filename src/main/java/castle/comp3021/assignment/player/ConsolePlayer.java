@@ -115,6 +115,9 @@ public class ConsolePlayer extends HumanPlayer {
             case "terminate" -> {
                 return new TerminatePieceAction(game, args);
             }
+            default -> {
+                break;
+            }
         }
         return null;
     }
